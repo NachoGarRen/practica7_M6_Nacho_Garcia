@@ -1,0 +1,29 @@
+<div class="products-container">
+    <div class="search-bar">
+      <input 
+        type="text" 
+        placeholder="Buscar productos..." 
+        (input)="onSearch($event)"
+        [value]="searchTerm"
+      >
+    </div>
+  
+    <div class="products-grid">
+      <div *ngFor="let product of filteredProducts" class="product-card">
+        <div class="product-image">
+          <img *ngIf="product.imageUrl" [src]="product.imageUrl" alt="Imagen del producto" width="150">
+          <span *ngIf="product.isOffer" class="offer-badge">Oferta</span>
+        </div>
+        
+        <div class="product-info">
+          <h3>{{product.name}}</h3>
+          <p class="product-type">{{product.productType}}</p>
+          <p class="product-price">{{product.price | currency:'EUR':'symbol':'1.2-2'}}</p>
+        </div>
+      </div>
+  
+      <div *ngIf="filteredProducts.length === 0" class="no-products">
+        No se encontraron productos
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,102 @@
+<div class="admin-container">
+    <h2>Gestión de Productos</h2>
+    
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+      <div class="form-group">
+        <label for="reference">Nº de referencia:</label>
+        <input 
+          id="reference" 
+          type="text" 
+          formControlName="reference"
+          (blur)="searchByReference()"
+        >
+        <div class="error-message" *ngIf="productForm.get('reference')?.touched && productForm.get('reference')?.invalid">
+          <span *ngIf="productForm.get('reference')?.errors?.['required']">El nº de referencia es obligatorio</span>
+          <span *ngIf="productForm.get('reference')?.errors?.['minlength']">Mínimo 5 caracteres</span>
+          <span *ngIf="productForm.get('reference')?.errors?.['maxlength']">Máximo 10 caracteres</span>
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="name">Nombre del producto:</label>
+        <input 
+          id="name" 
+          type="text" 
+          formControlName="name"
+        >
+        <div class="error-message" *ngIf="productForm.get('name')?.touched && productForm.get('name')?.invalid">
+          <span *ngIf="productForm.get('name')?.errors?.['required']">El nombre es obligatorio</span>
+          <span *ngIf="productForm.get('name')?.errors?.['minlength']">Mínimo 3 caracteres</span>
+          <span *ngIf="productForm.get('name')?.errors?.['maxlength']">Máximo 50 caracteres</span>
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="price">Precio:</label>
+        <input 
+          id="price" 
+          type="number" 
+          formControlName="price"
+        >
+        <div class="error-message" *ngIf="productForm.get('price')?.touched && productForm.get('price')?.invalid">
+          <span *ngIf="productForm.get('price')?.errors?.['required']">El precio es obligatorio</span>
+          <span *ngIf="productForm.get('price')?.errors?.['min']">El precio no puede ser negativo</span>
+          <span *ngIf="productForm.get('price')?.errors?.['max']">El precio máximo es 1000€</span>
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="description">Descripción:</label>
+        <textarea 
+          id="description" 
+          formControlName="description"
+        ></textarea>
+        <div class="error-message" *ngIf="productForm.get('description')?.touched && productForm.get('description')?.invalid">
+          <span *ngIf="productForm.get('description')?.errors?.['required']">La descripción es obligatoria</span>
+          <span *ngIf="productForm.get('description')?.errors?.['minlength']">Mínimo 10 caracteres</span>
+          <span *ngIf="productForm.get('description')?.errors?.['maxlength']">Máximo 500 caracteres</span>
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="productType">Tipo de Producto:</label>
+        <select 
+          id="productType" 
+          formControlName="productType"
+        >
+          <option value="">Selecciona un tipo</option>
+          <option *ngFor="let type of productTypes" [value]="type">
+            {{type}}
+          </option>
+        </select>
+        <div class="error-message" *ngIf="productForm.get('productType')?.touched && productForm.get('productType')?.invalid">
+          <span *ngIf="productForm.get('productType')?.errors?.['required']">El tipo de producto es obligatorio</span>
+        </div>
+      </div>
+  
+      <div class="form-group checkbox">
+        <label>
+          <input 
+            type="checkbox" 
+            formControlName="isOffer"
+          >
+          Producto de oferta
+        </label>
+      </div>
+  
+      <div class="form-group">
+        <label for="image">Imagen del producto:</label>
+        <input 
+          id="image" 
+          type="file" 
+          accept="image/*"
+          (change)="onImageSelected($event)"
+        >
+        <div class="error-message" *ngIf="productForm.get('imageUrl')?.touched && productForm.get('imageUrl')?.invalid">
+          <span *ngIf="productForm.get('imageUrl')?.errors?.['required']">La imagen es obligatoria</span>
+        </div>
+      </div>
+  
+      <button type="submit" [disabled]="productForm.invalid">AGREGAR PRODUCTO</button>
+    </form>
+  </div>
