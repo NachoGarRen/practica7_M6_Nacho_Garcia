@@ -1,0 +1,274 @@
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    color: #111;
+    background-color: #fff;
+}
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Auth container */
+.auth-container {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-title {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.auth-subtitle {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 28px;
+    color: #707072;
+}
+
+/* Form styles */
+.auth-form {
+    width: 100%;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.half {
+    flex: 1;
+}
+
+.third {
+    flex: 1;
+}
+
+.form-control {
+    width: 100%;
+    height: 48px;
+    padding: 16px 12px 4px;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #111;
+}
+
+.form-control:focus + label,
+.form-control:not(:placeholder-shown) + label {
+    transform: translateY(-12px);
+    font-size: 12px;
+}
+
+label {
+    position: absolute;
+    left: 12px;
+    top: 14px;
+    color: #707072;
+    font-size: 16px;
+    transition: all 0.3s;
+    pointer-events: none;
+}
+
+.static-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #111;
+    font-size: 14px;
+    position: static;
+}
+
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+}
+
+/* Checkbox and radio styles - FIXED */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.checkbox {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    position: static;
+}
+
+.checkbox-container label {
+    position: static;
+    font-size: 14px;
+    color: #707072;
+}
+
+.radio-group {
+    margin-bottom: 16px;
+}
+
+.radio-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+}
+
+.radio-option input {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+}
+
+.radio-option label {
+    position: static;
+    font-size: 14px;
+    color: #707072;
+}
+
+/* Form options */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.forgot-link {
+    color: #707072;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.forgot-link:hover {
+    color: #111;
+    text-decoration: underline;
+}
+
+/* Form text */
+.form-text {
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: #707072;
+}
+
+.form-text a,
+.checkbox-container a {
+    color: #111;
+    text-decoration: none;
+}
+
+.form-text a:hover,
+.checkbox-container a:hover {
+    text-decoration: underline;
+}
+
+/* Password requirements */
+.password-requirements {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #707072;
+}
+
+.password-requirements p {
+    margin-bottom: 4px;
+}
+
+.password-requirements ul {
+    padding-left: 16px;
+}
+
+.password-requirements li {
+    margin-bottom: 2px;
+}
+
+/* Button styles */
+.btn-primary {
+    width: 100%;
+    height: 48px;
+    background-color: #111;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 24px;
+}
+
+.btn-primary:hover {
+    background-color: #333;
+}
+
+/* Auth switch */
+.auth-switch {
+    text-align: center;
+    font-size: 14px;
+    color: #707072;
+}
+
+.auth-switch a {
+    color: #111;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Date row specific */
+.date-row {
+    margin-top: 8px;
+}
+
+/* Responsive styles */
+@media (max-width: 480px) {
+    .form-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .radio-options {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
