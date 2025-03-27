@@ -103,9 +103,20 @@
       </div>
     </div>
 
-    <button type="submit" [disabled]="productForm.invalid || isSubmitting">
-      {{ isSubmitting ? 'PROCESANDO...' : submitButtonText }}
-    </button>
+    <div class="form-actions">
+      <button type="submit" [disabled]="productForm.invalid || isSubmitting" class="submit-button">
+        {{ isSubmitting ? 'PROCESANDO...' : submitButtonText }}
+      </button>
+      
+      <!-- Botón de eliminar solo cuando se está editando un producto existente -->
+      <button 
+        *ngIf="isEditing && currentProductId" 
+        type="button" 
+        class="delete-button submit-button" 
+        (click)="deleteCurrentProduct()"
+      >
+        ELIMINAR PRODUCTO
+      </button>
+    </div>
   </form>
 </div>
-

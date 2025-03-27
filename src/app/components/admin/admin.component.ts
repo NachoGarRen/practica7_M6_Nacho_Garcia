@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from "@angular/forms"
+import { ActivatedRoute, Router } from "@angular/router"
 import { ProductService, Product } from "../../services/product.service"
-import { Router } from "@angular/router"
 import { AuthService } from "../../services/auth.service"
 
 @Component({
@@ -34,6 +34,7 @@ export class AdminComponent implements OnInit {
     private productService: ProductService,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute
   ) {
     this.productForm = this.createForm()
   }
@@ -43,7 +44,19 @@ export class AdminComponent implements OnInit {
     const user = this.authService.getUser()
     if (!user || user.role !== "admin") {
       this.router.navigate(["/home"])
+      return;
     }
+
+    // Verificar si hay un parámetro de referencia en la URL
+    this.route.queryParams.subscribe(params => {
+      const reference = params['reference'];
+      if (reference) {
+        // Establecer el valor de referencia en el formulario
+        this.productForm.get('reference')?.setValue(reference);
+        // Buscar el producto por referencia
+        this.searchByReference();
+      }
+    });
   }
 
   createForm(): FormGroup {
@@ -79,6 +92,8 @@ export class AdminComponent implements OnInit {
           next: () => {
             this.resetForm()
             this.isSubmitting = false
+            // Opcional: redirigir a la lista de productos después de actualizar
+            // this.router.navigate(['/products']);
           },
           error: (error) => {
             console.error("Error updating product:", error)
@@ -91,6 +106,8 @@ export class AdminComponent implements OnInit {
           next: () => {
             this.resetForm()
             this.isSubmitting = false
+            // Opcional: redirigir a la lista de productos después de agregar
+            // this.router.navigate(['/products']);
           },
           error: (error) => {
             console.error("Error adding product:", error)
@@ -168,6 +185,13 @@ export class AdminComponent implements OnInit {
     this.currentProductId = null
     this.submitButtonText = "AGREGAR PRODUCTO"
     this.imageUploaded = false
+    
+    // Limpiar el parámetro de referencia de la URL
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      replaceUrl: true
+    });
   }
 
   resetFormExceptReference() {
@@ -179,5 +203,26 @@ export class AdminComponent implements OnInit {
     this.submitButtonText = "AGREGAR PRODUCTO"
     this.imageUploaded = false
   }
-}
 
+  // Método para eliminar el producto actual
+  deleteCurrentProduct() {
+    if (!this.currentProductId) {
+      console.error('No hay un producto para eliminar');
+      return;
+    }
+
+    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+      this.productService.deleteProduct(this.currentProductId).subscribe({
+        next: () => {
+          console.log('Producto eliminado correctamente');
+          this.resetForm();
+          // Opcional: redirigir a la lista de productos después de eliminar
+          this.router.navigate(['/products']);
+        },
+        error: (error) => {
+          console.error('Error al eliminar el producto:', error);
+        }
+      });
+    }
+  }
+}
