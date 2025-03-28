@@ -1,0 +1,79 @@
+<div class="purchase-details-container">
+    <h2>Detalles del Pedido</h2>
+    
+    <div *ngIf="isLoading" class="loading">
+      Cargando detalles del pedido...
+    </div>
+    
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+    
+    <div *ngIf="!isLoading && !error && purchase" class="purchase-details">
+      <div class="purchase-header">
+        <div class="purchase-info">
+          <h3>Pedido #{{ purchase.id }}</h3>
+          <p class="purchase-date">Fecha: {{ purchase.purchase_date | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p class="purchase-status">
+            Estado: <span [ngClass]="getStatusClass(purchase.status)">{{ getStatusText(purchase.status) }}</span>
+          </p>
+        </div>
+        
+        <div class="purchase-total-info">
+          <p class="purchase-total">Total: {{ purchase.total | currency:'EUR':'symbol':'1.2-2' }}</p>
+        </div>
+      </div>
+      
+      <div class="purchase-items">
+        <h4>Productos</h4>
+        
+        <div class="items-header">
+          <div class="item-product">Producto</div>
+          <div class="item-price">Precio</div>
+          <div class="item-quantity">Cantidad</div>
+          <div class="item-total">Total</div>
+        </div>
+        
+        <div *ngFor="let item of purchase.items" class="item-row">
+          <div class="item-product">
+            <img *ngIf="item.product_image" [src]="item.product_image" alt="Imagen del producto" width="60">
+            <div class="product-details">
+              <h5>{{ item.product_name }}</h5>
+              <p class="product-reference">Ref: {{ item.product_reference }}</p>
+            </div>
+          </div>
+          
+          <div class="item-price">
+            {{ item.price | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+          
+          <div class="item-quantity">
+            {{ item.quantity }}
+          </div>
+          
+          <div class="item-total">
+            {{ item.price * item.quantity | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+      
+      <div class="purchase-summary">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>{{ purchase.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Envío:</span>
+          <span>Gratis</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span>{{ purchase.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+      
+      <div class="purchase-actions">
+        <button class="back-button" routerLink="/profile">Volver a Mi Perfil</button>
+      </div>
+    </div>
+  </div>

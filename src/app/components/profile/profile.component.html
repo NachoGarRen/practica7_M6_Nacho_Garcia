@@ -1,0 +1,166 @@
+<div class="profile-container">
+    <h2>Mi Perfil</h2>
+
+    <div class="profile-tabs">
+        <button [class.active]="activeTab === 'profile'" (click)="setActiveTab('profile')">
+            Datos Personales
+        </button>
+        <button [class.active]="activeTab === 'purchases'" (click)="setActiveTab('purchases')">
+            Historial de Compras
+        </button>
+    </div>
+
+    <!-- Sección de Datos Personales -->
+    <div *ngIf="activeTab === 'profile'" class="profile-section">
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input id="email" type="email" formControlName="email" [disabled]="true">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">Nombre:</label>
+                    <input id="first_name" type="text" formControlName="first_name">
+                    <div class="error-message"
+                        *ngIf="profileForm.get('first_name')?.touched && profileForm.get('first_name')?.invalid">
+                        <span *ngIf="profileForm.get('first_name')?.errors?.['required']">El nombre es
+                            obligatorio</span>
+                        <span *ngIf="profileForm.get('first_name')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="last_name">Apellidos:</label>
+                    <input id="last_name" type="text" formControlName="last_name">
+                    <div class="error-message"
+                        *ngIf="profileForm.get('last_name')?.touched && profileForm.get('last_name')?.invalid">
+                        <span *ngIf="profileForm.get('last_name')?.errors?.['required']">Los apellidos son
+                            obligatorios</span>
+                        <span *ngIf="profileForm.get('last_name')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="birth_date">Fecha de nacimiento:</label>
+                    <input id="birth_date" type="date" formControlName="birth_date">
+                    <div class="error-message"
+                        *ngIf="profileForm.get('birth_date')?.touched && profileForm.get('birth_date')?.invalid">
+                        <span *ngIf="profileForm.get('birth_date')?.errors?.['required']">La fecha de nacimiento es
+                            obligatoria</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="country_code">País (código):</label>
+                    <input id="country_code" type="text" formControlName="country_code" placeholder="ES">
+                    <div class="error-message"
+                        *ngIf="profileForm.get('country_code')?.touched && profileForm.get('country_code')?.invalid">
+                        <span *ngIf="profileForm.get('country_code')?.errors?.['required']">El código de país es
+                            obligatorio</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Género:</label>
+                <select id="gender" formControlName="gender">
+                    <option value="">Selecciona una opción</option>
+                    <option value="male">Hombre</option>
+                    <option value="female">Mujer</option>
+                    <option value="other">Otro</option>
+                    <option value="prefer_not_to_say">Prefiero no decirlo</option>
+                </select>
+                <div class="error-message"
+                    *ngIf="profileForm.get('gender')?.touched && profileForm.get('gender')?.invalid">
+                    <span *ngIf="profileForm.get('gender')?.errors?.['required']">El género es obligatorio</span>
+                </div>
+            </div>
+
+            <div class="form-group checkbox">
+                <label>
+                    <input type="checkbox" formControlName="marketing_consent">
+                    Acepto recibir comunicaciones comerciales
+                </label>
+            </div>
+
+            <h3>Cambiar Contraseña</h3>
+            <p class="password-info">Deja estos campos en blanco si no deseas cambiar tu contraseña</p>
+
+            <div class="form-group">
+                <label for="current_password">Contraseña actual:</label>
+                <input id="current_password" type="password" formControlName="current_password">
+            </div>
+
+            <div class="form-group">
+                <label for="new_password">Nueva contraseña:</label>
+                <input id="new_password" type="password" formControlName="new_password">
+                <div class="error-message"
+                    *ngIf="profileForm.get('new_password')?.touched && profileForm.get('new_password')?.invalid">
+                    <span *ngIf="profileForm.get('new_password')?.errors?.['minlength']">La contraseña debe tener al
+                        menos 8 caracteres</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirmar nueva contraseña:</label>
+                <input id="confirm_password" type="password" formControlName="confirm_password">
+                <div class="error-message"
+                    *ngIf="profileForm.get('confirm_password')?.touched && profileForm.get('confirm_password')?.errors?.['passwordMismatch']">
+                    Las contraseñas no coinciden
+                </div>
+            </div>
+
+            <div *ngIf="updateSuccess" class="success-message">
+                Perfil actualizado correctamente
+            </div>
+
+            <div *ngIf="updateError" class="error-message">
+                {{ updateError }}
+            </div>
+
+            <button type="submit" [disabled]="profileForm.invalid || isSubmitting" class="update-button">
+                {{ isSubmitting ? 'ACTUALIZANDO...' : 'ACTUALIZAR PERFIL' }}
+            </button>
+        </form>
+    </div>
+
+    <!-- Sección de Historial de Compras -->
+    <div *ngIf="activeTab === 'purchases'" class="purchases-section">
+        <div *ngIf="isLoading" class="loading">
+            Cargando historial de compras...
+        </div>
+
+        <div *ngIf="!isLoading && purchases.length === 0" class="no-purchases">
+            <p>No tienes compras realizadas</p>
+        </div>
+
+        <div *ngIf="!isLoading && purchases.length > 0" class="purchases-list">
+            <div class="purchase-header">
+                <div class="purchase-id">Pedido #</div>
+                <div class="purchase-date">Fecha</div>
+                <div class="purchase-total">Total</div>
+                <div class="purchase-status">Estado</div>
+                <div class="purchase-actions">Acciones</div>
+            </div>
+
+            <div *ngFor="let purchase of purchases" class="purchase-item">
+                <div class="purchase-id">{{ purchase.id }}</div>
+                <div class="purchase-date">{{ purchase.purchase_date | date:'dd/MM/yyyy HH:mm' }}</div>
+                <div class="purchase-total">{{ purchase.total | currency:'EUR':'symbol':'1.2-2' }}</div>
+                <div class="purchase-status">
+                    <span [ngClass]="'status-' + purchase.status.toLowerCase()">
+                        {{ purchase.status === 'completed' ? 'Completado' :
+                        purchase.status === 'processing' ? 'En proceso' :
+                        purchase.status === 'shipped' ? 'Enviado' : 'Pendiente' }}
+                    </span>
+                </div>
+                <div class="purchase-actions">
+                    <button class="view-details-button" [routerLink]="['/purchase', purchase.id]">Ver Detalles</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

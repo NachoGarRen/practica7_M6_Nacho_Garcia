@@ -1,0 +1,230 @@
+.purchase-details-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+  }
+  
+  .error-message {
+    color: #d32f2f;
+    background-color: #ffebee;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .purchase-details {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  
+  .purchase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .purchase-info h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+  }
+  
+  .purchase-date, .purchase-status {
+    margin: 5px 0;
+    color: #666;
+  }
+  
+  .status-completed, .status-processing, .status-shipped, .status-pending {
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    font-weight: 500;
+  }
+  
+  .status-completed {
+    color: #388e3c;
+    background-color: #e8f5e9;
+  }
+  
+  .status-processing {
+    color: #1976d2;
+    background-color: #e3f2fd;
+  }
+  
+  .status-shipped {
+    color: #f57c00;
+    background-color: #fff3e0;
+  }
+  
+  .status-pending {
+    color: #616161;
+    background-color: #f5f5f5;
+  }
+  
+  .purchase-total-info {
+    text-align: right;
+  }
+  
+  .purchase-total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .purchase-items {
+    margin-bottom: 30px;
+  }
+  
+  .purchase-items h4 {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .items-header {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    padding: 10px 15px;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
+  }
+  
+  .item-row {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+  }
+  
+  .item-product {
+    display: flex;
+    align-items: center;
+  }
+  
+  .item-product img {
+    margin-right: 15px;
+    border-radius: 4px;
+  }
+  
+  .product-details h5 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+  }
+  
+  .product-reference {
+    color: #777;
+    font-size: 0.8rem;
+    margin: 0;
+  }
+  
+  .purchase-summary {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+  }
+  
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .summary-row.total {
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-bottom: none;
+    padding-top: 15px;
+  }
+  
+  .purchase-actions {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .back-button {
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .back-button:hover {
+    background-color: #333;
+  }
+  
+  @media (max-width: 768px) {
+    .purchase-header {
+      flex-direction: column;
+    }
+    
+    .purchase-total-info {
+      text-align: left;
+      margin-top: 15px;
+    }
+    
+    .items-header, .item-row {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+    
+    .item-price {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .items-header {
+      display: none;
+    }
+    
+    .item-row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .item-product {
+      margin-bottom: 10px;
+    }
+    
+    .item-price::before {
+      content: 'Precio: ';
+      font-weight: bold;
+    }
+    
+    .item-quantity::before {
+      content: 'Cantidad: ';
+      font-weight: bold;
+    }
+    
+    .item-total::before {
+      content: 'Total: ';
+      font-weight: bold;
+    }
+  }

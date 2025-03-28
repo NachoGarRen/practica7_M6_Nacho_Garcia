@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';  // REMOVE 'type'
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,7 @@ export class AuthService {
       tap((response: any) => {
         if (this.isLocalStorageAvailable()) {
           localStorage.setItem('token', response.token);
-          
+
           // Fetch user data using the ID from login response
           this.http.get(`${this.apiUrl}/${response.id}`).subscribe(
             (userData: any) => {
@@ -39,6 +39,40 @@ export class AuthService {
         }
       })
     );
+  }
+
+  // Método para actualizar el perfil del usuario
+  updateProfile(userData: any): Observable<any> {
+    if (!this.isLocalStorageAvailable()) {
+      return of({ error: "Local storage not available" });
+    }
+
+    const token = localStorage.getItem("token");
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.put(`${this.apiUrl}/profile`, userData, { headers }).pipe(
+      tap((response: any) => {
+        console.log('Profile updated successfully:', response);
+      }),
+      catchError((error) => {
+        console.error('Error updating profile:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // Método para actualizar los datos del usuario en localStorage
+  updateUserData(userData: any): void {
+    if (this.isLocalStorageAvailable()) {
+      const currentUser = this.getUser();
+      if (currentUser) {
+        const updatedUser = { ...currentUser, ...userData };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        this.userSubject.next(updatedUser);
+      }
+    }
   }
 
   logout(): Observable<any> {
@@ -86,4 +120,6 @@ export class AuthService {
       return false;
     }
   }
+
+
 }

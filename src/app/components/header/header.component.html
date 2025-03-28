@@ -15,7 +15,7 @@
             <a href="/login" class="nav-link">Iniciar sesión</a>
         </ng-container>
         <ng-template #authenticated>
-            <span class="nav-link">{{ user?.first_name }} {{ user?.last_name }}</span>
+            <a routerLink="/profile" class="nav-link">{{ user?.first_name }} {{ user?.last_name }}</a>
             <span class="separator">|</span>
             <a href="#" class="nav-link" (click)="logout()">Cerrar sesión</a>
         </ng-template>
@@ -26,19 +26,20 @@
     <div class="nike-left">
         <img src="https://www.nike.com/android-icon-192x192.png" alt="Nike Logo" class="nike-logo">
     </div>
-    
+
     <nav class="nike-nav">
         <a class="nav-item" routerLink="/home" cdkMenuItem>Home</a>
-        
+
         <a class="nav-item" routerLink="/products" cdkMenuItem>Productos</a>
-        
+
         <a class="nav-item" routerLink="/admin" cdkMenuItem *ngIf="isAuthenticated && user?.role === 'admin'">Admin</a>
     </nav>
 
     <div class="nike-right">
         <div class="search-container">
             <button class="search-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
@@ -47,12 +48,16 @@
         </div>
 
         <button class="icon-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
             </svg>
         </button>
         <a routerLink="/cart" class="cart-icon" *ngIf="isAuthenticated">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -61,4 +66,3 @@
         </a>
     </div>
 </header>
-
