@@ -3,6 +3,7 @@ import { Router } from "@angular/router"
 import { AuthService } from "../../services/auth.service"
 import { CommonModule } from "@angular/common"
 import { RouterLink } from "@angular/router"
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: "app-header",
@@ -14,10 +15,12 @@ import { RouterLink } from "@angular/router"
 export class HeaderComponent implements OnInit {
   isAuthenticated = false
   user: any = null
+  cartItemCount = 0;
 
   constructor(
     private authService: AuthService,
     private router: Router,
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
@@ -29,13 +32,18 @@ export class HeaderComponent implements OnInit {
       } else {
         this.user = null
       }
-    })
+    });
+
+    this.cartService.cartItemCount$.subscribe(count => {
+      this.cartItemCount = count;
+    });
+
   }
 
   logout() {
     this.authService.logout().subscribe(() => {
       this.router.navigate(["/login"])
-    })
+    });
   }
 }
 

@@ -123,3 +123,23 @@
   .edit-button:active {
     background-color: #0066cc;
   }
+
+  .add-to-cart-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  
+  .add-to-cart-button:hover {
+    background-color: #45a049;
+  }
+  
+  .add-to-cart-button:active {
+    background-color: #3e8e41;
+  }

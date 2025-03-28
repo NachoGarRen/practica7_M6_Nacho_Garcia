@@ -1,0 +1,65 @@
+<div class="cart-container">
+    <h2>Mi Carrito de Compra</h2>
+    
+    <div *ngIf="isLoading" class="loading">
+      Cargando carrito...
+    </div>
+    
+    <div *ngIf="!isLoading && (!cart || !cart.items || cart.items.length === 0)" class="empty-cart">
+      <p>Tu carrito está vacío</p>
+    </div>
+    
+    <div *ngIf="!isLoading && cart && cart.items && cart.items.length > 0" class="cart-content">
+      <div class="cart-header">
+        <div class="product-info">Producto</div>
+        <div class="product-price">Precio</div>
+        <div class="product-quantity">Cantidad</div>
+        <div class="product-total">Total</div>
+        <div class="product-actions">Acciones</div>
+      </div>
+      
+      <div *ngFor="let item of cart.items" class="cart-item">
+        <div class="product-info">
+          <!-- Corregido: Verificar que item.product existe antes de acceder a imageUrl -->
+          <img *ngIf="item.product && item.product.imageUrl" [src]="item.product.imageUrl" alt="Imagen del producto" width="60">
+          <div class="product-details">
+            <h4>{{item.product?.name || 'Producto no disponible'}}</h4>
+            <p class="product-reference">Ref: {{item.product?.reference || 'N/A'}}</p>
+          </div>
+        </div>
+        
+        <div class="product-price">
+          {{item.price | currency:'EUR':'symbol':'1.2-2'}}
+        </div>
+        
+        <div class="product-quantity">
+          <input 
+            type="number" 
+            min="1" 
+            [value]="item.quantity" 
+            (change)="updateQuantity(item, $event)"
+          >
+        </div>
+        
+        <div class="product-total">
+          {{item.price * item.quantity | currency:'EUR':'symbol':'1.2-2'}}
+        </div>
+        
+        <div class="product-actions">
+          <button class="remove-button" (click)="removeItem(item.id!)">Eliminar</button>
+        </div>
+      </div>
+      
+      <div class="cart-summary">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span class="total-amount">{{cart.total | currency:'EUR':'symbol':'1.2-2'}}</span>
+        </div>
+        
+        <div class="cart-actions">
+          <button class="clear-cart" (click)="clearCart()">Vaciar Carrito</button>
+          <button class="checkout" (click)="checkout()">Finalizar Compra</button>
+        </div>
+      </div>
+    </div>
+  </div>

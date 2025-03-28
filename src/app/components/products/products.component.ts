@@ -4,6 +4,7 @@ import { CurrencyPipe } from "@angular/common"
 import { Router } from "@angular/router"
 import { ProductService, Product } from "../../services/product.service"
 import { AuthService } from "../../services/auth.service"
+import { CartService } from "../../services/cart.service"
 
 @Component({
   selector: "app-products",
@@ -18,17 +19,27 @@ export class ProductsComponent implements OnInit {
   searchTerm = ""
   isLoading = true
   isAdmin = false
+  isAuthenticated = false
 
   constructor(
     private productService: ProductService,
     private authService: AuthService,
+    private cartService: CartService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    // Verificar si el usuario es admin
-    const user = this.authService.getUser();
-    this.isAdmin = user && user.role === 'admin';
+    // Verificar si el usuario está autenticado y es admin
+    this.authService.isAuthenticated().subscribe(isAuthenticated => {
+      this.isAuthenticated = isAuthenticated;
+      
+      if (isAuthenticated) {
+        const user = this.authService.getUser();
+        this.isAdmin = user && user.role === 'admin';
+      } else {
+        this.isAdmin = false;
+      }
+    });
     
     // Load products from API
     this.productService.loadProducts()
@@ -84,5 +95,30 @@ export class ProductsComponent implements OnInit {
   editProduct(reference: string) {
     // Navegar a la página de administración con el parámetro de referencia
     this.router.navigate(['/admin'], { queryParams: { reference } });
+  }
+
+  // Método para añadir un producto al carrito
+  addToCart(productId: number | undefined) {
+    if (!productId) {
+      console.error('No se puede añadir un producto sin ID');
+      return;
+    }
+
+    if (!this.isAuthenticated) {
+      // Si el usuario no está autenticado, redirigir a la página de login
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.cartService.addToCart(productId).subscribe({
+      next: (response) => {
+        console.log('Producto añadido al carrito:', response);
+        // Opcional: mostrar un mensaje de éxito
+      },
+      error: (error) => {
+        console.error('Error al añadir el producto al carrito:', error);
+        // Opcional: mostrar un mensaje de error
+      }
+    });
   }
 }
