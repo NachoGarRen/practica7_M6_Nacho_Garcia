@@ -12,16 +12,20 @@ describe("ProductService", () => {
       imports: [HttpClientTestingModule],
       providers: [
         ProductService,
-        { provide: PLATFORM_ID, useValue: "browser" }, // Simular entorno de navegador
+        { provide: PLATFORM_ID, useValue: "browser" },
       ],
     })
 
     service = TestBed.inject(ProductService)
     httpMock = TestBed.inject(HttpTestingController)
+    
+    // Handle the initial HTTP request that happens automatically
+    const initialReq = httpMock.expectOne("http://localhost:3000/products")
+    initialReq.flush([]) // Respond with empty array
   })
 
   afterEach(() => {
-    // Verificar que no hay solicitudes pendientes
+    // Verify that no requests are outstanding
     httpMock.verify()
   })
 
@@ -31,7 +35,7 @@ describe("ProductService", () => {
 
   describe("loadProducts", () => {
     it("should fetch products from the API", () => {
-      // Datos de prueba
+      // Test data
       const mockProducts = [
         {
           id: 1,
@@ -55,21 +59,21 @@ describe("ProductService", () => {
         },
       ]
 
-      // Llamar al método loadProducts
+      // Call loadProducts method
       service.loadProducts()
 
-      // Esperar y responder a la solicitud HTTP
+      // Expect and respond to the HTTP request
       const req = httpMock.expectOne("http://localhost:3000/products")
       expect(req.request.method).toBe("GET")
       req.flush(mockProducts)
 
-      // Verificar que los productos se cargaron correctamente
+      // Verify products were loaded correctly
       service.products$.subscribe((products) => {
         expect(products.length).toBe(2)
         expect(products[0].name).toBe("Running Shoes")
         expect(products[1].name).toBe("Basketball Shoes")
 
-        // Verificar la conversión de snake_case a camelCase
+        // Verify snake_case to camelCase conversion
         expect(products[0].productType).toBe("Sabatilles de running de carretera - Home")
         expect(products[1].isOffer).toBe(true)
       })
@@ -78,7 +82,7 @@ describe("ProductService", () => {
 
   describe("addProduct", () => {
     it("should add a product and update the products list", () => {
-      // Producto de prueba
+      // Test product
       const newProduct: Product = {
         reference: "REF12345",
         name: "New Product",
@@ -89,25 +93,25 @@ describe("ProductService", () => {
         imageUrl: "http://example.com/image.jpg",
       }
 
-      // Respuesta esperada del servidor
+      // Expected server response
       const mockResponse = { id: 1, ...newProduct }
 
-      // Llamar al método addProduct
+      // Call addProduct method
       service.addProduct(newProduct).subscribe((response) => {
         expect(response).toEqual(mockResponse)
       })
 
-      // Esperar y responder a la solicitud HTTP
+      // Expect and respond to the HTTP request
       const req = httpMock.expectOne("http://localhost:3000/products")
       expect(req.request.method).toBe("POST")
 
-      // Verificar que los datos enviados al servidor están en snake_case
+      // Verify data sent to server is in snake_case
       expect(req.request.body.product_type).toBe("Sabatilles de padel")
       expect(req.request.body.is_offer).toBe(false)
 
       req.flush(mockResponse)
 
-      // Verificar que el producto se añadió a la lista
+      // Verify product was added to the list
       service.products$.subscribe((products) => {
         const addedProduct = products.find((p) => p.reference === "REF12345")
         expect(addedProduct).toBeTruthy()
@@ -118,7 +122,7 @@ describe("ProductService", () => {
 
   describe("updateProduct", () => {
     it("should update an existing product", () => {
-      // Producto de prueba
+      // Test product
       const updatedProduct: Product = {
         id: 1,
         reference: "REF12345",
@@ -130,16 +134,16 @@ describe("ProductService", () => {
         imageUrl: "http://example.com/updated-image.jpg",
       }
 
-      // Llamar al método updateProduct
+      // Call updateProduct method
       service.updateProduct(updatedProduct).subscribe((response) => {
         expect(response).toBeTruthy()
       })
 
-      // Esperar y responder a la solicitud HTTP
+      // Expect and respond to the HTTP request
       const req = httpMock.expectOne("http://localhost:3000/products/1")
       expect(req.request.method).toBe("PUT")
 
-      // Verificar que los datos enviados al servidor están en snake_case
+      // Verify data sent to server is in snake_case
       expect(req.request.body.product_type).toBe("Sabatilles de padel")
       expect(req.request.body.is_offer).toBe(true)
 
@@ -149,7 +153,7 @@ describe("ProductService", () => {
 
   describe("deleteProduct", () => {
     it("should delete a product and update the products list", () => {
-      // Configurar el servicio con algunos productos
+      // Configure service with some products
       const initialProducts = [
         {
           id: 1,
@@ -163,20 +167,20 @@ describe("ProductService", () => {
         },
       ]
 
-      // Establecer los productos iniciales
+      // Set initial products
       ;(service as any).products.next(initialProducts)
 
-      // Llamar al método deleteProduct
+      // Call deleteProduct method
       service.deleteProduct(1).subscribe((response) => {
         expect(response).toBeTruthy()
       })
 
-      // Esperar y responder a la solicitud HTTP
+      // Expect and respond to the HTTP request
       const req = httpMock.expectOne("http://localhost:3000/products/1")
       expect(req.request.method).toBe("DELETE")
       req.flush({})
 
-      // Verificar que el producto se eliminó de la lista
+      // Verify product was removed from the list
       service.products$.subscribe((products) => {
         expect(products.length).toBe(0)
       })
@@ -185,23 +189,23 @@ describe("ProductService", () => {
 
   describe("uploadImage", () => {
     it("should upload an image and return the URL", () => {
-      // Crear un mock de archivo
+      // Create a mock file
       const mockFile = new File([""], "test-image.jpg", { type: "image/jpeg" })
 
-      // Respuesta esperada del servidor
+      // Expected server response
       const mockResponse = { imageUrl: "/uploads/test-image.jpg" }
 
-      // Llamar al método uploadImage
+      // Call uploadImage method
       service.uploadImage(mockFile).subscribe((response) => {
-        // La URL debe ser completa
+        // URL should be complete
         expect(response.imageUrl).toBe("http://192.168.11.199:3001/uploads/test-image.jpg")
       })
 
-      // Esperar y responder a la solicitud HTTP
+      // Expect and respond to the HTTP request
       const req = httpMock.expectOne("http://192.168.11.199:3001/upload")
       expect(req.request.method).toBe("POST")
 
-      // Verificar que se envió un FormData con el archivo
+      // Verify FormData with file was sent
       expect(req.request.body instanceof FormData).toBeTrue()
 
       req.flush(mockResponse)
@@ -210,7 +214,7 @@ describe("ProductService", () => {
 
   describe("getProductByReference", () => {
     it("should return a product by reference", () => {
-      // Configurar el servicio con algunos productos
+      // Configure service with some products
       const mockProducts = [
         {
           id: 1,
@@ -224,20 +228,20 @@ describe("ProductService", () => {
         },
       ]
 
-      // Establecer los productos
+      // Set products
       ;(service as any).products.next(mockProducts)
 
-      // Llamar al método getProductByReference
+      // Call getProductByReference method
       const product = service.getProductByReference("REF12345")
 
-      // Verificar que se devolvió el producto correcto
+      // Verify correct product was returned
       expect(product).toBeTruthy()
       expect(product?.id).toBe(1)
       expect(product?.name).toBe("Test Product")
     })
 
     it("should return undefined if product not found", () => {
-      // Configurar el servicio con algunos productos
+      // Configure service with some products
       const mockProducts = [
         {
           id: 1,
@@ -251,13 +255,13 @@ describe("ProductService", () => {
         },
       ]
 
-      // Establecer los productos
+      // Set products
       ;(service as any).products.next(mockProducts)
 
-      // Llamar al método getProductByReference con una referencia que no existe
+      // Call getProductByReference with non-existent reference
       const product = service.getProductByReference("NONEXISTENT")
 
-      // Verificar que se devolvió undefined
+      // Verify undefined was returned
       expect(product).toBeUndefined()
     })
   })

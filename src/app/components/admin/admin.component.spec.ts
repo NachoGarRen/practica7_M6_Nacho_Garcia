@@ -17,7 +17,7 @@ describe("AdminComponent", () => {
   let windowSpy: jasmine.Spy
 
   beforeEach(async () => {
-    // Crear spies para los servicios
+    // Create spies for services
     productServiceSpy = jasmine.createSpyObj("ProductService", [
       "addProduct",
       "updateProduct",
@@ -29,12 +29,12 @@ describe("AdminComponent", () => {
     authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser"])
     routerSpy = jasmine.createSpyObj("Router", ["navigate"])
 
-    // Mock para ActivatedRoute
+    // Mock for ActivatedRoute
     activatedRouteMock = {
       queryParams: of({}),
     }
 
-    // Configurar comportamiento de los spies
+    // Configure spy behavior
     authServiceSpy.getUser.and.returnValue({ role: "admin" })
     productServiceSpy.addProduct.and.returnValue(of({ id: 1 }))
     productServiceSpy.updateProduct.and.returnValue(of({}))
@@ -42,8 +42,11 @@ describe("AdminComponent", () => {
     productServiceSpy.uploadImage.and.returnValue(of({ imageUrl: "http://example.com/image.jpg" }))
 
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, CommonModule],
-      declarations: [AdminComponent],
+      imports: [
+        ReactiveFormsModule, 
+        CommonModule,
+        AdminComponent // Move from declarations to imports since it's a standalone component
+      ],
       providers: [
         FormBuilder,
         { provide: ProductService, useValue: productServiceSpy },
@@ -75,10 +78,10 @@ describe("AdminComponent", () => {
   it("should validate required fields", () => {
     const form = component.productForm
 
-    // Inicialmente el formulario es inválido porque todos los campos requeridos están vacíos
+    // Initially the form is invalid because all required fields are empty
     expect(form.valid).toBeFalsy()
 
-    // Llenar los campos requeridos
+    // Fill in required fields
     form.patchValue({
       reference: "REF12345",
       name: "Test Product",
@@ -92,7 +95,7 @@ describe("AdminComponent", () => {
   })
 
   it("should call addProduct when submitting a new product", () => {
-    // Configurar el formulario con datos válidos
+    // Configure form with valid data
     component.productForm.patchValue({
       reference: "REF12345",
       name: "Test Product",
@@ -102,24 +105,24 @@ describe("AdminComponent", () => {
       imageUrl: "http://example.com/image.jpg",
     })
 
-    // Asegurarse de que no estamos en modo edición
+    // Make sure we're not in edit mode
     component.isEditing = false
     component.currentProductId = null
 
-    // Llamar al método onSubmit
+    // Call onSubmit method
     component.onSubmit()
 
-    // Verificar que se llamó al método addProduct del servicio
+    // Verify addProduct method was called
     expect(productServiceSpy.addProduct).toHaveBeenCalled()
 
-    // Verificar que se pasaron los datos correctos
+    // Verify correct data was passed
     const productData = productServiceSpy.addProduct.calls.mostRecent().args[0]
     expect(productData.reference).toBe("REF12345")
     expect(productData.name).toBe("Test Product")
   })
 
   it("should call updateProduct when submitting an existing product", () => {
-    // Configurar el formulario con datos válidos
+    // Configure form with valid data
     component.productForm.patchValue({
       reference: "REF12345",
       name: "Test Product",
@@ -129,17 +132,17 @@ describe("AdminComponent", () => {
       imageUrl: "http://example.com/image.jpg",
     })
 
-    // Configurar modo edición
+    // Configure edit mode
     component.isEditing = true
     component.currentProductId = 1
 
-    // Llamar al método onSubmit
+    // Call onSubmit method
     component.onSubmit()
 
-    // Verificar que se llamó al método updateProduct del servicio
+    // Verify updateProduct method was called
     expect(productServiceSpy.updateProduct).toHaveBeenCalled()
 
-    // Verificar que se pasaron los datos correctos
+    // Verify correct data was passed
     const productData = productServiceSpy.updateProduct.calls.mostRecent().args[0]
     expect(productData.id).toBe(1)
     expect(productData.reference).toBe("REF12345")
@@ -147,7 +150,7 @@ describe("AdminComponent", () => {
   })
 
   it("should search for product by reference", () => {
-    // Mock del producto que se va a encontrar
+    // Mock product to be found
     const mockProduct = {
       id: 1,
       reference: "REF12345",
@@ -159,19 +162,19 @@ describe("AdminComponent", () => {
       imageUrl: "http://example.com/image.jpg",
     }
 
-    // Configurar el spy para devolver el producto mock
+    // Configure spy to return mock product
     productServiceSpy.getProductByReference.and.returnValue(mockProduct)
 
-    // Establecer la referencia en el formulario
+    // Set reference in form
     component.productForm.get("reference")?.setValue("REF12345")
 
-    // Llamar al método searchByReference
+    // Call searchByReference method
     component.searchByReference()
 
-    // Verificar que se llamó al método getProductByReference
+    // Verify getProductByReference was called
     expect(productServiceSpy.getProductByReference).toHaveBeenCalledWith("REF12345")
 
-    // Verificar que el formulario se actualizó con los datos del producto
+    // Verify form was updated with product data
     expect(component.isEditing).toBeTrue()
     expect(component.currentProductId).toBe(1)
     expect(component.productForm.get("name")?.value).toBe("Test Product")
@@ -179,49 +182,49 @@ describe("AdminComponent", () => {
   })
 
   it("should handle image upload", () => {
-    // Crear un mock del evento de selección de archivo
+    // Create mock file selection event
     const mockFile = new File([""], "test-image.jpg", { type: "image/jpeg" })
     const mockEvent = { target: { files: [mockFile] } as any }
 
-    // Llamar al método onImageSelected
+    // Call onImageSelected method
     component.onImageSelected(mockEvent)
 
-    // Verificar que se llamó al método uploadImage del servicio
+    // Verify uploadImage method was called
     expect(productServiceSpy.uploadImage).toHaveBeenCalledWith(mockFile)
 
-    // Verificar que la URL de la imagen se estableció en el formulario
+    // Verify image URL was set in form
     expect(component.imageUploaded).toBeTrue()
     expect(component.productForm.get("imageUrl")?.value).toBe("http://example.com/image.jpg")
   })
 
   it("should delete current product when confirmed", () => {
-    // Configurar el componente con un ID de producto actual
+    // Configure component with current product ID
     component.currentProductId = 1
 
-    // Mock para window.confirm
+    // Mock for window.confirm
     windowSpy = spyOn(window, "confirm").and.returnValue(true)
 
-    // Llamar al método deleteCurrentProduct
+    // Call deleteCurrentProduct method
     component.deleteCurrentProduct()
 
-    // Verificar que se llamó al método deleteProduct del servicio
+    // Verify deleteProduct method was called
     expect(productServiceSpy.deleteProduct).toHaveBeenCalledWith(1)
 
-    // Verificar que se navegó a la página de productos
+    // Verify navigation to products page
     expect(routerSpy.navigate).toHaveBeenCalledWith(["/products"])
   })
 
   it("should not delete product when confirmation is cancelled", () => {
-    // Configurar el componente con un ID de producto actual
+    // Configure component with current product ID
     component.currentProductId = 1
 
-    // Mock para window.confirm
+    // Mock for window.confirm
     windowSpy = spyOn(window, "confirm").and.returnValue(false)
 
-    // Llamar al método deleteCurrentProduct
+    // Call deleteCurrentProduct method
     component.deleteCurrentProduct()
 
-    // Verificar que NO se llamó al método deleteProduct del servicio
+    // Verify deleteProduct method was NOT called
     expect(productServiceSpy.deleteProduct).not.toHaveBeenCalled()
   })
 })

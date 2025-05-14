@@ -16,7 +16,7 @@ describe("ProductsComponent", () => {
   let routerSpy: jasmine.SpyObj<Router>
   let confirmSpy: jasmine.Spy<any>
 
-  // Datos de prueba
+  // Test data
   const mockProducts: Product[] = [
     {
       id: 1,
@@ -41,21 +41,23 @@ describe("ProductsComponent", () => {
   ]
 
   beforeEach(async () => {
-    // Crear spies para los servicios
+    // Create spies for services
     productServiceSpy = jasmine.createSpyObj("ProductService", ["loadProducts", "deleteProduct"])
     authServiceSpy = jasmine.createSpyObj("AuthService", ["isAuthenticated", "getUser"])
     cartServiceSpy = jasmine.createSpyObj("CartService", ["addToCart"])
     routerSpy = jasmine.createSpyObj("Router", ["navigate"])
 
-    // Configurar comportamiento de los spies
+    // Configure spy behavior
     productServiceSpy.products$ = of(mockProducts)
     authServiceSpy.isAuthenticated.and.returnValue(of(true))
     authServiceSpy.getUser.and.returnValue({ role: "admin" })
     cartServiceSpy.addToCart.and.returnValue(of({ message: "Product added to cart" }))
 
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [ProductsComponent],
+      imports: [
+        CommonModule,
+        ProductsComponent // Move from declarations to imports since it's a standalone component
+      ],
       providers: [
         { provide: ProductService, useValue: productServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
@@ -75,116 +77,118 @@ describe("ProductsComponent", () => {
   })
 
   it("should load products on init", () => {
-    // Verificar que se llamó al método loadProducts
+    // Verify loadProducts was called
     expect(productServiceSpy.loadProducts).toHaveBeenCalled()
 
-    // Verificar que los productos se cargaron correctamente
+    // Verify products were loaded correctly
     expect(component.products.length).toBe(2)
     expect(component.filteredProducts.length).toBe(2)
     expect(component.isLoading).toBeFalse()
   })
 
   it("should filter products by name", () => {
-    // Establecer término de búsqueda
+    // Set search term
     component.searchTerm = "running"
 
-    // Llamar al método filterProducts
+    // Call filterProducts method
     component.filterProducts()
 
-    // Verificar que solo se muestra el producto que coincide con la búsqueda
+    // Verify only matching product is shown
     expect(component.filteredProducts.length).toBe(1)
     expect(component.filteredProducts[0].name).toBe("Running Shoes")
   })
 
   it("should filter products by reference", () => {
-    // Establecer término de búsqueda
+    // Set search term
     component.searchTerm = "REF678"
 
-    // Llamar al método filterProducts
+    // Call filterProducts method
     component.filterProducts()
 
-    // Verificar que solo se muestra el producto que coincide con la búsqueda
+    // Verify only matching product is shown
     expect(component.filteredProducts.length).toBe(1)
     expect(component.filteredProducts[0].reference).toBe("REF67890")
   })
 
   it("should filter products by product type", () => {
-    // Establecer término de búsqueda
+    // Set search term
     component.searchTerm = "bàsquet"
 
-    // Llamar al método filterProducts
+    // Call filterProducts method
     component.filterProducts()
 
-    // Verificar que solo se muestra el producto que coincide con la búsqueda
+    // Verify only matching product is shown
     expect(component.filteredProducts.length).toBe(1)
     expect(component.filteredProducts[0].productType).toBe("Sabatilles de bàsquet")
   })
 
   it("should update search term on onSearch", () => {
-    // Crear un mock del evento
+    // Create mock event
     const mockEvent = { target: { value: "basketball" } } as unknown as Event
 
-    // Llamar al método onSearch
+    // Call onSearch method
     component.onSearch(mockEvent)
 
-    // Verificar que el término de búsqueda se actualizó
+    // Verify search term was updated
     expect(component.searchTerm).toBe("basketball")
 
-    // Verificar que los productos se filtraron
+    // Verify products were filtered
     expect(component.filteredProducts.length).toBe(1)
     expect(component.filteredProducts[0].name).toBe("Basketball Shoes")
   })
 
   it("should delete product when confirmed", () => {
-    // Mock para window.confirm
+    // Mock for window.confirm
     confirmSpy = spyOn(window, "confirm").and.returnValue(true)
 
-    // Configurar el spy para deleteProduct
+    // Configure deleteProduct spy
     productServiceSpy.deleteProduct.and.returnValue(of({}))
 
-    // Llamar al método deleteProduct
+    // Call deleteProduct method
     component.deleteProduct(1)
 
-    // Verificar que se llamó al método deleteProduct del servicio
+    // Verify service's deleteProduct was called
     expect(productServiceSpy.deleteProduct).toHaveBeenCalledWith(1)
   })
 
   it("should not delete product when confirmation is cancelled", () => {
-    // Mock para window.confirm
+    // Mock for window.confirm
     confirmSpy = spyOn(window, "confirm").and.returnValue(false)
 
-    // Llamar al método deleteProduct
+    // Call deleteProduct method
     component.deleteProduct(1)
 
-    // Verificar que NO se llamó al método deleteProduct del servicio
+    // Verify service's deleteProduct was NOT called
     expect(productServiceSpy.deleteProduct).not.toHaveBeenCalled()
   })
 
   it("should navigate to admin page when editing product", () => {
-    // Llamar al método editProduct
+    // Call editProduct method
     component.editProduct("REF12345")
 
-    // Verificar que se navegó a la página de administración con el parámetro correcto
+    // Verify navigation to admin page with correct parameter
     expect(routerSpy.navigate).toHaveBeenCalledWith(["/admin"], { queryParams: { reference: "REF12345" } })
   })
 
   it("should add product to cart when authenticated", () => {
-    // Llamar al método addToCart
+    // Call addToCart method
     component.addToCart(1)
 
-    // Verificar que se llamó al método addToCart del servicio
+    // Verify service's addToCart was called
     expect(cartServiceSpy.addToCart).toHaveBeenCalledWith(1)
   })
 
   it("should redirect to login when adding to cart while not authenticated", () => {
-    // Configurar el spy para que el usuario no esté autenticado
+    // Configure spy for unauthenticated user
     authServiceSpy.isAuthenticated.and.returnValue(of(false))
 
-    // Recrear el componente para que tome la nueva configuración
+    // Recreate component with new configuration
     TestBed.resetTestingModule()
     TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [ProductsComponent],
+      imports: [
+        CommonModule,
+        ProductsComponent // Move from declarations to imports
+      ],
       providers: [
         { provide: ProductService, useValue: productServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
@@ -198,13 +202,13 @@ describe("ProductsComponent", () => {
     component = fixture.componentInstance
     fixture.detectChanges()
 
-    // Llamar al método addToCart
+    // Call addToCart method
     component.addToCart(1)
 
-    // Verificar que se navegó a la página de login
+    // Verify navigation to login page
     expect(routerSpy.navigate).toHaveBeenCalledWith(["/login"])
 
-    // Verificar que NO se llamó al método addToCart del servicio
+    // Verify service's addToCart was NOT called
     expect(cartServiceSpy.addToCart).not.toHaveBeenCalled()
   })
 })
